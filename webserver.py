@@ -23,6 +23,8 @@ def add_camera():
     try:
         cam_ip = str(data["cam_ip"])
         node_id = str(data["node_id"])
+
+    # Make sure that the data given in is correct
     except KeyError:
         return "Missing Arguments", 400
     except ValueError:
@@ -53,6 +55,7 @@ def add_camera():
 def remove_camera(cam_id):
     cam_id = str(cam_id)
 
+    # Make sure that the cammera being deleted exists
     if cam_id not in cameras:
         return f"Camera {cam_id} Not Found", 400
     node = cameras[cam_id]
@@ -69,7 +72,7 @@ def remove_camera(cam_id):
 
     del cameras[cam_id]
     
-    return "ok"
+    return f"Camera {cam_id} has been deleted" , 200
 
 
 # Reset Camera
@@ -86,7 +89,7 @@ def reset_camera(cam_id):
     node.totalLineCrossedRight = 0
     node.totalLineCrossed = 0
     
-    return "ok"
+    return f"Camera {cam_id} has been reset" , 200
 
 
 # Get Cameras
@@ -112,7 +115,7 @@ def camera_info(cam_id):
     response["crossed_right"] = node.totalLineCrossedRight
     response["total_crossed"] = node.totalLineCrossed
 
-    return jsonify(response)
+    return jsonify(response), 200
 
 
 # Change Camera Line Info
@@ -138,7 +141,7 @@ def camera_change_line(cam_id):
     node.lineA = (ax, ay)
     node.lineB = (bx, by)
 
-    return "ok"
+    return f"The lign for camera {cam_id} has been updated" , 200
 
 
 # Get Camera Raw Stream
@@ -149,7 +152,7 @@ def camera_stream(cam_id):
     if cam_id not in cameras:
         return f"Camera {cam_id} Not Found", 400
     node = cameras[cam_id]
-
+    # Return a steam from the cammera and place it well in html
     return Response(node.generateCameraStream(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
@@ -161,5 +164,5 @@ def camera_stream_annotated(cam_id):
     if cam_id not in cameras:
         return f"Camera {cam_id} Not Found", 400
     node = cameras[cam_id]
-
+    # Return a steam from the annotated function from the ai and place it well in html
     return Response(node.generateAiStream(), mimetype='multipart/x-mixed-replace; boundary=frame')
